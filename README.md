@@ -12,10 +12,10 @@
 
 ## **Documents**
 
-- Notes regarding [The Role of Women in the Church](documents/RoleOfWomen.md) and 1 Cor 14:34,35
+- Notes regarding [The Role of Women in the Church](RoleOfWomen.md) and 1 Cor 14:34,35
 
-- Notes regarding [Aramaic Primacy](documents/AramaicPrimacy.md)
+- Notes regarding [Aramaic Primacy](AramaicPrimacy.md)
 
-- Notes regarding [King James Onlyism](documents/KingJamesOnly.md), plus notes about the so-called ["Missing Verses"](documents/MissingVerses.md).
+- Notes regarding [King James Onlyism](KingJamesOnly.md), plus notes about the so-called ["Missing Verses"](MissingVerses.md).
 
-- Notes regarding [Alcohol Consumption by Christians](documents/AlcoholAndChristians.md)
+- Notes regarding [Alcohol Consumption by Christians](AlcoholAndChristians.md)
