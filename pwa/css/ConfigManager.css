@@ -1,0 +1,209 @@
+/* Configuration Manager Styles */
+
+/* Radio Groups */
+.config-radio-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+}
+
+.config-radio-option {
+	display: flex;
+	text-align: left;
+	gap: 8px;
+	padding: 6px 8px;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.3s ease;
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
+}
+
+.dark .config-radio-option:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+.config-radio-input {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	cursor: pointer;
+}
+
+.config-radio-label {
+	flex: 1;
+	cursor: pointer;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+/* Toggle Switches */
+.config-toggle-container {
+	display: flex;
+	text-align: left;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 8px;
+}
+
+.config-toggle-description {
+	flex: 1;
+	strong {
+		display: block;
+		font-size: 15px;
+		color: var(--color-txt-1);
+		margin-bottom: 4px;
+	}
+}
+
+.config-toggle-switch {
+	position: relative;
+	display: inline-block;
+	width: 52px;
+	height: 28px;
+	flex-shrink: 0;
+	input[type="checkbox"] {
+		opacity: 0;
+		width: 0;
+		height: 0;
+		position: absolute;
+	}
+	input[type="checkbox"]:checked + .config-toggle-slider {
+		background-color: var(--color-bg-green);
+		&:before {
+			transform: translateX(24px);
+		}
+	}
+}
+
+.config-toggle-slider {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--color-bg-4);
+	transition: 0.3s;
+	border-radius: 28px;
+	&:before {
+		position: absolute;
+		content: "";
+		height: 22px;
+		width: 22px;
+		left: 3px;
+		bottom: 3px;
+		background-color: white;
+		transition: 0.3s;
+		border-radius: 50%;
+		box-shadow: var(--shadow-1);
+	}
+}
+
+/* Input Fields */
+.config-input-container {
+	margin-top: 8px;
+	input {
+		flex: 1;
+		padding: 10px 12px;
+		border: var(--border);
+		border-radius: var(--radius-med);
+		font-size: 15px;
+		font-weight: 500;
+		transition: var(--transition-border-color);
+		width: 100%;
+		&:focus {
+			outline: none;
+			border-color: var(--color-border-blue);
+			background-color: var(--color-bg-dim-blue);
+		}
+	}
+}
+
+.config-input-with-unit {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.config-unit-label {
+	font-weight: 600;
+	color: var(--color-txt-important);
+	font-size: 15px;
+	min-width: 30px;
+}
+
+/* Select Dropdowns */
+.config-select {
+	width: 100%;
+	padding: 10px 12px;
+	border: var(--border);
+	border-radius: var(--radius-med);
+	font-size: 15px;
+	font-weight: 500;
+	transition: var(--transition-border-color);
+	margin-top: 8px;
+	&:focus {
+		outline: none;
+		border-color: var(--color-border-blue);
+		background-color: var(--color-bg-dim-blue);
+	}
+}
+
+/* Slider Container */
+.config-slider-container {
+	margin-top: 8px;
+}
+
+.config-slider-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+/* Slider Input */
+.config-slider {
+	flex: 1;
+	height: 6px;
+	border-radius: var(--radius-sm);
+	background-color: var(--color-bg-3);
+	outline: none;
+	-webkit-appearance: none;
+	appearance: none;
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color-slider-button);
+		box-shadow: var(--shadow-1);
+		transition: var(--transition-all);
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+	&::-moz-range-thumb {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color-slider-button);
+		border: none;
+		box-shadow: var(--shadow-1);
+		transition: var(--transition-all);
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+}
+
+/* Slider Value Display */
+.config-slider-value {
+	min-width: 40px;
+	text-align: right;
+	font-weight: 600;
+	color: var(--color-txt-1);
+	font-size: 16px;
+}

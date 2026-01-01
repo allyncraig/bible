@@ -1,21 +1,15 @@
-# Allyn Craig Personal Projects and Documents
+# Allyn's Bible Translation (ABT)
 
-## **Projects I'm Working On**
+My personal Bible Translation Project
 
-- [Allyn's Bible Translation](bible/ABT.md) : My own translation of the Bible
-- [Bible App](bible-app/BibleApp.md) : Native Android App; and PWA for iOS and Web Brosers
-- Workout Tracker
-- Walk Tracker
-- Tabata Workout Tool
-- Multiplication Practice Tool
-- FlashCards app
+[Home](https://allyncraig.github.io/main/)
 
-## **Documents**
+---
 
-- Notes regarding [The Role of Women in the Church](RoleOfWomen.md) and 1 Cor 14:34,35
+- [Download ABT in Plain Text format]() in a ZIP File
+- [Download ABT in Markown format]() in ZIP File
+- Also available in my [Bible App](android/index.md)
 
-- Notes regarding [Aramaic Primacy](AramaicPrimacy.md)
+---
 
-- Notes regarding [King James Onlyism](KingJamesOnly.md), plus notes about the so-called ["Missing Verses"](MissingVerses.md).
-
-- Notes regarding [Alcohol Consumption by Christians](AlcoholAndChristians.md)
+(c) 2025-2026 by Allyn Craig
