@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.zicasoft.mybibleapp" version="0.7.48" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>My Bible App</name>
+    <icon src="www/img/bible.png" />
+    <description>Bible App for reading the Bible.</description>
+    <author email="aloahinc@gmail.com" href="https://cordova.apache.org">
+		ZICAsoft
+	</author>
+    <content src="index.html" />
+    <hook src="hooks/001_update_version.js" type="before_prepare" />
+    <hook src="hooks/remove-config-file-tags.js" type="after_prepare" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="BackgroundColor" value="#ffffff" />
+</widget>
