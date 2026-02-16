@@ -146,12 +146,17 @@
 
 .menu-content {
 	position: absolute;
-	top: 60px;
-	right: 15px;
 	background-color: white;
 	border-radius: var(--radius-med);
 	width: fit-content;
 	box-shadow: var(--shadow-3);
+	&.stable {
+		top: 60px;
+		right: 15px;
+	}
+	&.movable {
+		position: fixed;
+	}
 }
 
 .menu-item {
@@ -371,6 +376,105 @@
 	text-align: left;
 }
 
+.search-pagination-container {
+	padding: 0px 4px;
+	background: var(--color-bg-main);
+	border-bottom: var(--border);
+}
+
+.search-pagination {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	flex-wrap: wrap;
+}
+
+.page-nav-btn {
+	padding: 6px 2px;
+	border: 1px solid var(--color-border);
+	background: var(--color-bg-2);
+	color: var(--text-txt-1);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	font-size: 14px;
+	min-width: 36px;
+	&:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+	&:not(:disabled):hover {
+		background: var(--button-hover-background);
+	}
+}
+
+.page-number-btn {
+	/* Inherits from .page-nav-btn */
+	font-weight: normal;
+	&.current {
+		font-weight: bold;
+		background: var(--color-bg-blue);
+		color: white;
+		border-color: var(--color-bg-blue);
+		cursor: default;
+	}
+	&.current:disabled {
+		opacity: 1; /* Override disabled opacity for current page */
+	}
+}
+
+.search-showing {
+	text-align: center;
+	font-size: 13px;
+	color: var(--text-txt-2);
+	margin-top: 4px;
+}
+
+.search-loading-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	backdrop-filter: blur(2px);
+}
+
+.dark .search-loading-overlay {
+	background: rgba(0, 0, 0, 0.7);
+}
+
+.loading-spinner {
+	width: 24px;
+	height: 24px;
+	border: 3px solid rgba(0, 0, 0, 0.1);
+	border-top-color: var(--primary-color);
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+/* Responsive: single line on larger screens */
+/* @media (min-width: 600px) {
+	.search-pagination-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.search-showing {
+		margin-top: 0;
+		margin-left: 15px;
+	}
+} */
+
 /* Splash Modal */
 .splash-modal {
 	background: var(--color-splash-bg);
@@ -569,33 +673,6 @@
 	font-size: 12px;
 	font-weight: bold;
 	box-shadow: var(--shadow-1);
-}
-
-/* Day Complete Modal */
-
-.daycomplete-message {
-	font-size: 16px;
-	font-weight: bold;
-	padding: var(--padding-sm);
-}
-
-.daycomplete-button-row {
-	display: flex;
-	flex-direction: row;
-	margin-top: 10px;
-	gap: 8px;
-	padding: var(--padding-sm);
-}
-
-.daycomplete-button {
-	font-size: 14px;
-	color: var(--color-txt-emphasize);
-	border-radius: var(--radius-sm);
-	box-shadow: var(--shadow-1);
-	line-height: unset !important;
-	min-height: unset !important;
-	height: 40px;
-	flex: 1;
 }
 
 /* VotD Styles in About Modal */

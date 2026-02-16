@@ -18,11 +18,11 @@ class DownloadManager {
 		try {
 			// Step 1: Download ZIP file
 			progressCallback(`Downloading ${versionCode}.zip...`, 0);
-			
+
 			// Detect environment
 			const isPWA = !window.cordova;
 			let zipBlob;
-			
+
 			if (isPWA) {
 				// PWA: Use standard fetch
 				const response = await fetch(url + versionCode + '.zip');

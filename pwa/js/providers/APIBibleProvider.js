@@ -37,20 +37,26 @@ class APIBibleProvider extends BaseProvider {
 		return books;
 	}
 
-	async fetchChapter(versionParams, bookApiId, chapterNum) {
-		const url = this.buildUrl(
-			'https://api.scripture.api.bible/v1/bibles/{{VERSIONID}}/chapters/' + 
-			bookApiId + '.' + chapterNum + 
-			'?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false',
-			versionParams
-		);
+async fetchChapter(versionParams, bookApiId, chapterNum) {
+	const url = this.buildUrl(
+		'https://api.scripture.api.bible/v1/bibles/{{VERSIONID}}/chapters/' + 
+		bookApiId + '.' + chapterNum + 
+		'?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false',
+		versionParams
+	);
 
-		const data = await this.fetchJSON(url, this.getHeaders());
-		const content = data.data.content;
+	const data = await this.fetchJSON(url, this.getHeaders());
+	const content = data.data.content;
 
-		// Apply transformations
-		return this.transformContent(content);
-	}
+	// Apply transformations
+	const html = this.transformContent(content);
+	
+	// Return consistent format (no raw verses for this provider)
+	return {
+		html: html,
+		rawVerses: {}
+	};
+}
 
 	async search(versionParams, searchTerm) {
 		const url = this.buildUrl(
@@ -107,3 +113,5 @@ class APIBibleProvider extends BaseProvider {
 		return { headers };
 	}
 }
+
+window.APIBibleProvider = APIBibleProvider;

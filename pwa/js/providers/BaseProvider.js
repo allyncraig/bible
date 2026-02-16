@@ -36,3 +36,5 @@ class BaseProvider {
 		return await response.json();
 	}
 }
+
+window.BaseProvider = BaseProvider;

@@ -51,29 +51,30 @@ class BollsLifeProvider extends BaseProvider {
 			html += `<p class="verse"><span class="verse-number">${verseObj.verse}</span>&nbsp;${text}</p>`;
 		});
 
-		return html;
+		// Return consistent format (no raw verses for this provider)
+		return {
+			html: html,
+			rawVerses: {}
+		};
 	}
 
-	async search(versionParams, searchTerm) {
-		const baseUrl = 'https://bolls.life/v2/find/{{VERSIONID}}';
-		const url = this.buildUrl(baseUrl, versionParams) + 
-			'?search=' + encodeURIComponent(searchTerm) +
-			'&match_case=false&match_whole=false&limit=10&page=1';
+async search(versionParams, searchTerm, page = 1) {
+	const baseUrl = 'https://bolls.life/v2/find/{{VERSIONID}}';
+	const url = this.buildUrl(baseUrl, versionParams) + 
+		'?search=' + encodeURIComponent(searchTerm) +
+		`&match_case=false&match_whole=false&limit=${APP.SEARCH_RESULTS_PER_PAGE}&page=${page}`;
 
-		const data = await this.fetchJSON(url);
+	const data = await this.fetchJSON(url);
 
-		if (!data.results || data.results.length === 0) {
-			return [];
-		}
-
-		return data.results.map(result => {
-			// Return raw result with book ID - let caller resolve it
-			return {
-				bookId: result.book,
-				chapter: result.chapter.toString(),
-				verse: result.verse.toString(),
-				text: result.text.replace(/<\/?mark>/g, '')
-			};
-		});
+	if (!data.results || data.results.length === 0) {
+		return { results: [], total: 0 };
 	}
+
+	return {
+		results: data.results,
+		total: data.total
+	};
 }
+}
+
+window.BollsLifeProvider = BollsLifeProvider;

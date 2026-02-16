@@ -9,6 +9,12 @@ const VERSION_CONFIG = [
 			db: {
 				tableBooks: 'ABT_books',
 				tableVerses: 'ABT_verses'
+			},
+			api: {
+				provider: 'AbtApi',
+				parameters: {
+					VERSIONID: 'ABT'
+				}
 			}
 		},
 	},
@@ -191,20 +197,6 @@ const VERSION_CONFIG = [
 				provider: 'bolls.life',
 				parameters: {
 					VERSIONID: 'RV1960'
-				}
-			}
-		}
-	},
-	{
-		abbreviation: 'SBL',
-		name: "SBL Greek NT",
-		languageCode: 'gr',
-		languageName: 'Koine Greek',
-		sources: {
-			api: {
-				provider: 'helloao.org',
-				parameters: {
-					VERSIONID: 'grc_sbl'
 				}
 			}
 		}

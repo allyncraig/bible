@@ -7,6 +7,7 @@ My personal Bible Translation Project
 ---
 
 - [Download ABT in Plain Text format]() in a ZIP File
+- [Download ABT in CSV format]() in a ZIP File
 - [Download ABT in Markown format]() in ZIP File
 - Also available in my [Bible App](android/index.md)
 

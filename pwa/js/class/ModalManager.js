@@ -57,8 +57,68 @@ class ModalManager {
 	}
 
 	// verseMenuModal
-	showVerseMenu() {
+	showVerseMenu(clientX, clientY) {
 		this.show('verseMenu');
+
+		// Position the menu near the click/touch location
+		if (clientX !== undefined && clientY !== undefined) {
+			const modal = this.modals['verseMenu'];
+			const menuContent = modal.querySelector('.menu-content');
+
+			if (menuContent) {
+				// Get menu dimensions
+				const menuRect = menuContent.getBoundingClientRect();
+				const menuWidth = menuRect.width || 200; // fallback width
+				const menuHeight = menuRect.height || 150; // fallback height
+
+				// Get viewport dimensions
+				const viewportWidth = window.innerWidth;
+				const viewportHeight = window.innerHeight;
+
+				const padding = 10; // padding from screen edges
+
+				// Determine horizontal position
+				// Default: top-left corner at click point
+				let left = clientX;
+				let useRightCorner = false;
+
+				// If menu would go off right edge, use top-right corner instead
+				if (left + menuWidth > viewportWidth - padding) {
+					left = clientX - menuWidth;
+					useRightCorner = true;
+
+					// If still off screen (click too far left), clamp it
+					if (left < padding) {
+						left = padding;
+					}
+				}
+
+				// Determine vertical position
+				// Default: top corner at click point
+				let top = clientY;
+				let useBottomCorner = false;
+
+				// If menu would go off bottom edge, use bottom corner instead
+				if (top + menuHeight > viewportHeight - padding) {
+					top = clientY - menuHeight;
+					useBottomCorner = true;
+
+					// If still off screen (click too high), clamp it
+					if (top < padding) {
+						top = padding;
+					}
+				}
+
+				// Apply positioning
+				menuContent.style.position = 'fixed';
+				menuContent.style.left = left + 'px';
+				menuContent.style.top = top + 'px';
+
+				// Optional: Log which corner is being used (for debugging)
+				// const corner = `${useBottomCorner ? 'bottom' : 'top'}-${useRightCorner ? 'right' : 'left'}`;
+				// console.log(`Menu positioned at ${corner} corner`);
+			}
+		}
 
 		// Enable/disable Suggest Edit button based on version
 		const currentVersion = app.navigationManager.getCurrentVersion();

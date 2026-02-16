@@ -1,7 +1,7 @@
 {
   "name": "My Bible App",
   "short_name": "MyBibleApp",
-  "version": "0.7.48",
+  "version": "0.7.60",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

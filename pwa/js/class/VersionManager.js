@@ -121,18 +121,42 @@ class VersionManager {
 
 		const normalizedSearch = normalize(bookName);
 
-		// Try exact match first
+		// Try exact match on name first
 		for (let i = 0; i < searchBooks.length; i++) {
 			if (normalize(searchBooks[i].name) === normalizedSearch) {
 				return searchBooks[i];
 			}
 		}
 
-		// Try partial match
+		// Try exact match on abbreviation (case-insensitive)
+		const searchUpper = bookName.toUpperCase();
+		for (let i = 0; i < searchBooks.length; i++) {
+			if (searchBooks[i].abbreviation && 
+					searchBooks[i].abbreviation.toUpperCase() === searchUpper) {
+				return searchBooks[i];
+			}
+		}
+
+		// Try abbreviation lookup (e.g., "PRO" -> id 20 -> Proverbs)
+		const bookId = getBookIndexByName(searchUpper);
+		if (bookId) {
+			const book = searchBooks.find(b => b.id === parseInt(bookId));
+			if (book) return book;
+		}
+
+		// Try partial match on name
 		for (let i = 0; i < searchBooks.length; i++) {
 			const normalizedBookName = normalize(searchBooks[i].name);
 			if (normalizedBookName.indexOf(normalizedSearch) !== -1 || 
-				normalizedSearch.indexOf(normalizedBookName) !== -1) {
+					normalizedSearch.indexOf(normalizedBookName) !== -1) {
+				return searchBooks[i];
+			}
+		}
+
+		// Try partial match on abbreviation
+		for (let i = 0; i < searchBooks.length; i++) {
+			if (searchBooks[i].abbreviation && 
+					searchBooks[i].abbreviation.toUpperCase().indexOf(searchUpper) !== -1) {
 				return searchBooks[i];
 			}
 		}
@@ -275,5 +299,13 @@ class VersionManager {
 
 		// Legacy format - return as-is
 		return version;
+	}
+
+	getStandardBookName(bookId) {
+		return getBookName(bookId);
+	}
+
+	getStandardBookAbbr(bookId) {
+		return getBookAbbr(bookId);
 	}
 }

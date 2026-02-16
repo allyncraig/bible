@@ -15,9 +15,13 @@ class DailyReadingManager {
 		// Load reading plan from storage (already cached by loadReadingPlan)
 		this.readingPlan = this.storageManager.getReadingPlan();
 
-		if (!this.readingPlan) {
-			console.warn('DailyReadingManager: No reading plan found');
+		if (!this.readingPlan || !Array.isArray(this.readingPlan) || this.readingPlan.length === 0) {
+			console.warn('DailyReadingManager: No reading plan found, waiting for it to load...');
 			this.readingPlan = [];
+			// Don't initialize completion state yet - wait for reading plan to be loaded
+			this.completionState = [];
+			this.readingModeYear = new Date().getFullYear();
+			return;
 		}
 
 		// Load completion state
@@ -34,12 +38,25 @@ class DailyReadingManager {
 			this.saveState();
 		}
 
-		console.dir({
-			message: 'DailyReadingManager initialized:',
-			planDays: this.readingPlan.length,
-			year: this.readingModeYear,
-			completions: this.completionState.length
-		});
+		// console.dir({
+		// 	message: 'DailyReadingManager initialized:',
+		// 	planDays: this.readingPlan.length,
+		// 	year: this.readingModeYear,
+		// 	completions: this.completionState.length
+		// });
+	}
+
+	ensureInitialized() {
+		// Called when reading plan modal opens to ensure completion state is ready
+		if (this.readingPlan.length > 0 && this.completionState.length === 0) {
+			console.log('Late initializing completion state...');
+			this.initializeCompletionState();
+
+			if (!this.readingModeYear) {
+				this.readingModeYear = new Date().getFullYear();
+				this.saveState();
+			}
+		}
 	}
 
 	// Initialize empty completion state (all false)
@@ -59,11 +76,11 @@ class DailyReadingManager {
 		this.readingModeDay = day;
 		this.currentReadingIndex = readingIndex;
 
-		console.dir({
-			message: 'Entered daily reading mode:',
-			day: day,
-			readingIndex: readingIndex
-		});
+		// console.dir({
+		// 	message: 'Entered daily reading mode:',
+		// 	day: day,
+		// 	readingIndex: readingIndex
+		// });
 	}
 
 	// Exit daily reading mode
@@ -288,11 +305,11 @@ class DailyReadingManager {
 			this.readingModeYear = saved.year;
 			this.completionState = saved.completions;
 
-			console.dir({
-				message: 'Loaded completion state:',
-				year: this.readingModeYear,
-				days: this.completionState.length
-			});
+			// console.dir({
+			// 	message: 'Loaded completion state:',
+			// 	year: this.readingModeYear,
+			// 	days: this.completionState.length
+			// });
 		} else {
 			// console.log('No saved completion state found');
 			this.completionState = [];

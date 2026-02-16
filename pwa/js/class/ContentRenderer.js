@@ -26,7 +26,7 @@ class ContentRenderer {
 		// Render verses
 		const versesData = [];
 		const versesList = verses.rows || verses;
-	    const verseCount = verses.rows ? verses.rows.length : verses.length;
+		const verseCount = verses.rows ? verses.rows.length : verses.length;
 		for (let i = 0; i < verseCount; i++) {
 			const verse = versesList.item ? versesList.item(i) : versesList[i];
 			versesData.push({
@@ -40,6 +40,15 @@ class ContentRenderer {
 
 		Template.render('verseTemplate', 'bibleText', versesData, true);
 		document.getElementById('mainPlaceholder').classList.add('hidden');
+
+		// Add RTL class if needed
+		const version = app.versionManager.getVersion(app.navigationManager.getCurrentVersion());
+		const bibleTextEl = document.getElementById('bibleText');
+		if (this.isRTLVersion(version)) {
+			bibleTextEl.classList.add('rtl-text');
+		} else {
+			bibleTextEl.classList.remove('rtl-text');
+		}
 
 		this.scrollToTop();
 		this.attachVerseListeners();
@@ -56,7 +65,6 @@ class ContentRenderer {
 		Template.render('chapterHeaderTemplate', 'bibleHeader', {
 			bookName: bookName,
 			chapter: chapter,
-
 		}, false);
 
 		// Parse API content and extract verses
@@ -65,6 +73,15 @@ class ContentRenderer {
 		// Render verses
 		Template.render('verseTemplate', 'bibleText', versesData, true);
 		document.getElementById('mainPlaceholder').classList.add('hidden');
+
+		// Add RTL class if needed
+		const version = app.versionManager.getVersion(app.navigationManager.getCurrentVersion());
+		const bibleTextEl = document.getElementById('bibleText');
+		if (this.isRTLVersion(version)) {
+			bibleTextEl.classList.add('rtl-text');
+		} else {
+			bibleTextEl.classList.remove('rtl-text');
+		}
 
 		this.scrollToTop();
 		this.attachVerseListeners();
@@ -110,15 +127,17 @@ class ContentRenderer {
 			// Mobile: long-press
 			let longPressTimer;
 			let touchStarted = false;
+			let touchEvent = null;
 
 			verseEl.addEventListener('touchstart', (e) => {
 				touchStarted = true;
+				touchEvent = e;
 				longPressTimer = setTimeout(() => {
 					if (touchStarted) {
 						e.preventDefault();
-						this.handleVerseLongPress(verseEl);
+						this.handleVerseLongPress(verseEl, touchEvent);
 					}
-				}, 500); // 500ms for long-press
+				}, 500);
 			});
 
 			verseEl.addEventListener('touchend', () => {
@@ -134,12 +153,12 @@ class ContentRenderer {
 			// Desktop: right-click
 			verseEl.addEventListener('contextmenu', (e) => {
 				e.preventDefault();
-				this.handleVerseLongPress(verseEl);
+				this.handleVerseLongPress(verseEl, e);
 			});
 		});
 	}
 
-	handleVerseLongPress(verseEl) {
+	handleVerseLongPress(verseEl, event) {
 		const bookId = verseEl.getAttribute('data-book');
 		const chapter = verseEl.getAttribute('data-chapter');
 		const verse = verseEl.getAttribute('data-verse');
@@ -151,8 +170,25 @@ class ContentRenderer {
 			verse: parseInt(verse)
 		};
 
-		// Show verse menu
-		app.modalManager.showVerseMenu();
+		// Get click/touch position
+		let clientX, clientY;
+		if (event.type === 'contextmenu') {
+			// Desktop right-click
+			clientX = event.clientX;
+			clientY = event.clientY;
+		} else if (event.changedTouches && event.changedTouches.length > 0) {
+			// Mobile touch
+			clientX = event.changedTouches[0].clientX;
+			clientY = event.changedTouches[0].clientY;
+		} else {
+			// Fallback - center of verse element
+			const rect = verseEl.getBoundingClientRect();
+			clientX = rect.left + rect.width / 2;
+			clientY = rect.top + rect.height / 2;
+		}
+
+		// Show verse menu at click position
+		app.modalManager.showVerseMenu(clientX, clientY);
 	}
 
 	formatJSONArrayContent(jsonArray, transformConfig) {
@@ -207,7 +243,7 @@ class ContentRenderer {
 		}
 	}
 
-	scrollToVerse(verseNumber) {
+	scrollToVerse(verseNumber, instant = false) {
 		const verseElements = document.querySelectorAll('.verse-number');
 		let targetVerse = null;
 
@@ -222,76 +258,21 @@ class ContentRenderer {
 		if (targetVerse) {
 			const verseParagraph = targetVerse.closest('.verse') || targetVerse.parentElement;
 
-			verseParagraph.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+			// Add highlight class
 			verseParagraph.classList.add('verse-highlight');
-
 			setTimeout(() => {
 				verseParagraph.classList.remove('verse-highlight');
-			}, 3000);
+			}, 2000);
+
+			// Scroll with or without animation
+			verseParagraph.scrollIntoView({ 
+				behavior: instant ? 'auto' : 'smooth', 
+				block: 'center' 
+			});
 		} else {
-			// console.log(`Verse ${verseNumber} not found, scrolling to top`);
 			this.scrollToTop();
 		}
 	}
-
-	// async renderChapterInterlinear(bookName, chapter, versesVersionA, versesVersionB) {
-	// 	const currentBook = app.versionManager.findBookById(app.navigationManager.getCurrentBook());
-	// 	const bookId = currentBook ? currentBook.id : '';
-	// 	// Clear content area
-	// 	this.contentElement.innerHTML = '';
-	// 	// Get primary version abbreviation
-	// 	const primaryVersion = app.configManager.getValue('interlinearPrimaryVersion') || 'BSB';
-	// 	// Render interlinear header
-	// 	Template.render('chapterHeaderTemplate', 'bibleHeader', {
-	// 		bookName: bookName,
-	// 		chapter: chapter,
-	// 		versionName: `${primaryVersion} / ABT`
-	// 	}, false);
-
-	// 	// Handle both IndexedDB format (verses.rows) and direct array format
-	// 	const listA = versesVersionA.rows || versesVersionA;
-	// 	const listB = versesVersionB.rows || versesVersionB;
-	// 	const lengthA = versesVersionA.rows ? versesVersionA.rows.length : versesVersionA.length;
-	// 	const lengthB = versesVersionB.rows ? versesVersionB.rows.length : versesVersionB.length;
-
-	// 	const maxVerses = Math.max(
-	// 		lengthA > 0 ? (listA.item ? listA.item(lengthA - 1).verse : listA[lengthA - 1].verse) : 0,
-	// 		lengthB > 0 ? (listB.item ? listB.item(lengthB - 1).verse : listB[lengthB - 1].verse) : 0
-	// 	);
-
-	// 	const mapVersionA = new Map();
-	// 	const mapVersionB = new Map();
-
-	// 	for (let i = 0; i < lengthA; i++) {
-	// 		const verse = listA.item ? listA.item(i) : listA[i];
-	// 		mapVersionA.set(verse.verse, verse.text);
-	// 	}
-	// 	for (let i = 0; i < lengthB; i++) {
-	// 		const verse = listB.item ? listB.item(i) : listB[i];
-	// 		mapVersionB.set(verse.verse, verse.text);
-	// 	}
-
-	// 	// Build verse pairs data
-	// 	const versePairsData = [];
-	// 	for (let verseNum = 1; verseNum <= maxVerses; verseNum++) {
-	// 		const textVersionA = mapVersionA.get(verseNum) || `<em>(not in ${primaryVersion})</em>`;
-	// 		const textVersionB = mapVersionB.get(verseNum) || '<em>(not in ABT)</em>';
-	// 		const noteIcon = this.hasNoteIcon(bookId, chapter, verseNum);
-	// 		versePairsData.push({
-	// 			bookId: bookId,
-	// 			chapter: chapter,
-	// 			verseNumber: verseNum,
-	// 			noteIcon: noteIcon,
-	// 			verseTextA: textVersionA,
-	// 			verseTextB: textVersionB
-	// 		});
-	// 	}
-	// 	Template.render('interlinearVerseTemplate', 'bibleText', versePairsData, true);
-	// 	document.getElementById('mainPlaceholder').classList.add('hidden');
-	// 	this.scrollToTop();
-	// 	this.attachVerseListeners();
-	// }
 
 	setFontSize(fontSize) {
 		this.contentElement.style.fontSize = fontSize + 'px';
@@ -363,13 +344,36 @@ class ContentRenderer {
 		if (!element) return;
 
 		const threshold = 50; // pixels from bottom
-		const scrollPosition = element.scrollTop + element.clientHeight;
-		const scrollHeight = element.scrollHeight;
 
-		// Check if near bottom
-		if (scrollHeight - scrollPosition <= threshold) {
-			// console.log('Near bottom, triggering completion check');
-			this.handleReadingComplete();
+		// Check if we have dimmed verses (partial chapter reading)
+		const dimmedVerses = document.querySelectorAll('.verse.dimmed');
+		const hasDimmedVerses = dimmedVerses.length > 0;
+
+		if (hasDimmedVerses) {
+			// For partial readings, find the last non-dimmed verse
+			const allVerses = Array.from(document.querySelectorAll('.verse'));
+			const lastVisibleVerse = allVerses.reverse().find(v => !v.classList.contains('dimmed'));
+
+			if (!lastVisibleVerse) return;
+
+			// Check if last visible verse is in viewport or has been scrolled past
+			const verseRect = lastVisibleVerse.getBoundingClientRect();
+			const containerRect = element.getBoundingClientRect();
+
+			// Check if the bottom of the last visible verse is at or above the bottom of the viewport
+			const isLastVerseVisible = verseRect.bottom <= containerRect.bottom + threshold;
+
+			if (isLastVerseVisible) {
+				this.handleReadingComplete();
+			}
+		} else {
+			// For full chapter readings, use the original logic
+			const scrollPosition = element.scrollTop + element.clientHeight;
+			const scrollHeight = element.scrollHeight;
+
+			if (scrollHeight - scrollPosition <= threshold) {
+				this.handleReadingComplete();
+			}
 		}
 	}
 
@@ -390,7 +394,7 @@ class ContentRenderer {
 		// console.dir(reading);
 
 		// Mark as complete
-		app.dailyReadingManager.markComplete(reading.day, reading.index, true);
+		app.dailyReadingManager.markComplete(parseInt(reading.day), reading.index, true);
 
 		// Update UI if modal is open
 		if (app.modalManager.isVisible(MODAL.READINGPLAN)) {
@@ -423,14 +427,11 @@ class ContentRenderer {
 			}
 		}
 
-		// Show completion notification
-		openToast('Reading marked complete! ✓');
-
 		// Check if day is complete
 		if (app.dailyReadingManager.isDayComplete(reading.day)) {
 			// Disable scroll detection temporarily to prevent double-triggers
 			this.scrollCheckEnabled = false;
-			showDayCompleteDialog(reading.day);
+			openToast(`Day ${reading.day} Daily Reading Complete!`);
 			// Re-enable after dialog
 			setTimeout(() => {
 				this.scrollCheckEnabled = true;
@@ -438,18 +439,19 @@ class ContentRenderer {
 		}
 	}
 
-	renderChapterInterlinearUnified(bookName, chapter, versesA, versesB, sourceA, sourceB, versionAbbr) {
+	renderChapterInterlinear(bookName, chapter, versesA, versesB, sourceA, sourceB, versionAbbr) {
 		const currentBook = app.versionManager.findBookById(app.navigationManager.getCurrentBook());
 		const bookId = currentBook ? currentBook.id : '';
 
 		// Clear content area
 		this.contentElement.innerHTML = '';
+		const displayBookName = getBookName(bookId);
 
 		// Render interlinear header with dynamic version name
 		Template.render('chapterHeaderTemplate', 'bibleHeader', {
-			bookName: bookName,
+			bookName: displayBookName,
 			chapter: chapter,
-			versionName: `${versionAbbr || 'BSB'} / ABT`
+			versionName: `${versionAbbr || APP.INTERLINEAR_FALLBACK_PRIMARY} / ABT`
 		}, false);
 
 		// Convert both to uniform format
@@ -506,29 +508,65 @@ class ContentRenderer {
 			sourceB,
 			versesACount: mapVersionA.size,
 			versesBCount: mapVersionB.size,
-			maxVerses
+			maxVerses,
+			versionAbbr
 		});
 
 		// Build verse pairs data
 		const versePairsData = [];
 		for (let verseNum = 1; verseNum <= maxVerses; verseNum++) {
-			const textVersionA = mapVersionA.get(verseNum) || `<em>(not in ${versionAbbr || 'BSB'})</em>`;
-			const textVersionB = mapVersionB.get(verseNum) || '<em>(not in ABT)</em>';
-			const noteIcon = this.hasNoteIcon(bookId, chapter, verseNum);
+			// Check if verse exists in each version
+			const hasVerseA = mapVersionA.has(verseNum);
+			const hasVerseB = mapVersionB.has(verseNum);
 
-			versePairsData.push({
-				bookId: bookId,
-				chapter: chapter,
-				verseNumber: verseNum,
-				noteIcon: noteIcon,
-				verseTextA: textVersionA,
-				verseTextB: textVersionB
-			});
+			// don't show the verse if both versions omit
+			if (hasVerseA || hasVerseB) {
+				// Get text or placeholder
+				const textVersionA = hasVerseA 
+					? mapVersionA.get(verseNum) 
+					: `<em>(OMIT)</em>`;
+				const textVersionB = hasVerseB 
+					? mapVersionB.get(verseNum) 
+					: '<em>(OMIT)</em>';
+	
+				const noteIcon = this.hasNoteIcon(bookId, chapter, verseNum);
+	
+				versePairsData.push({
+					bookId: bookId,
+					chapter: chapter,
+					verseNumber: verseNum,
+					noteIcon: noteIcon,
+					verseTextA: textVersionA,
+					verseTextB: textVersionB
+				});
+			}
 		}
 
 		Template.render('interlinearVerseTemplate', 'bibleText', versePairsData, true);
 		document.getElementById('mainPlaceholder').classList.add('hidden');
+
+		// Add RTL class if needed (check primary version)
+		const primaryVersionAbbr = app.configManager.getValue('interlinearPrimaryVersion') || APP.INTERLINEAR_FALLBACK_PRIMARY;
+		const primaryVersion = app.versionManager.getVersion(primaryVersionAbbr);
+		const bibleTextEl = document.getElementById('bibleText');
+		if (this.isRTLVersion(primaryVersion)) {
+			bibleTextEl.classList.add('rtl-text');
+		} else {
+			bibleTextEl.classList.remove('rtl-text');
+		}
+
 		this.scrollToTop();
 		this.attachVerseListeners();
+	}
+
+	isRTLVersion(version) {
+		if (!version) return false;
+
+		// Check for explicit textDirection property (future-proofing)
+		if (version.textDirection === 'rtl') return true;
+
+		// Check for RTL language codes
+		const rtlLanguages = ['he', 'ar'];
+		return rtlLanguages.includes(version.languageCode);
 	}
 }

@@ -14,8 +14,8 @@
 	--color-bg-4: light-dark(#ccc, #444);
 	--color-bg-reverse: light-dark(#222, #eee);
 	--color-bg-blue: #2196f3;
-	/* --color-bg-blue: light-dark(#2196f3, #0d47a1); */
 	--color-bg-green: #4caf50;
+	--color-bg-darkgreen: #1b5e20;
 	/* --color-bg-green: light-dark(#4caf50, #1b5e20); */
 	--color-bg-dim-blue: light-dark(#e3f2fd, #1e4a6b);
 	--color-bg-highlight: light-dark(#ffeb3b, #8b7500);
@@ -84,8 +84,21 @@ body {
 }
 
 /* Header Bar */
-.header-bar {
+
+.header-bar,
+.nav-button,
+.version-button {
 	background-color: var(--color-bg-blue);
+	transition: background-color 0.3s ease;
+}
+
+body.reading-mode .header-bar,
+body.reading-mode .nav-button,
+body.reading-mode .version-button {
+	background-color: var(--color-bg-darkgreen);
+}
+
+.header-bar {
 	padding: 6px 10px;
 	display: flex;
 	justify-content: space-between;
@@ -202,7 +215,6 @@ body {
 
 /* Button Styles */
 .nav-button {
-	background-color: var(--color-bg-blue);
 	color: white;
 	border: none;
 	border-radius: 0;
@@ -238,7 +250,6 @@ body {
 
 /* Version button in footer */
 .version-button {
-	background-color: var(--color-bg-blue);
 	color: white;
 	min-width: 60px;
 	font-weight: 600;
@@ -400,6 +411,36 @@ To adjust the dark mode background color, change background-color: #2a2a2a; in b
 .verse.dimmed {
 	opacity: 0.3;
 	transition: var(--transition-opacity);
+}
+
+/* RTL Text Support */
+.rtl-text {
+	font-size: 1.3em !important; /* 25% larger for better Hebrew readability */
+}
+
+.rtl-text .verse {
+	direction: rtl;
+	text-align: right;
+}
+
+.rtl-text .verse-number {
+	float: right;
+	margin-left: 0.5em;
+	margin-right: 0;
+	font-size: 0.7em;
+}
+
+/* Keep verse-primary and verse-secondary styling but add RTL support */
+.rtl-text .verse-primary,
+.rtl-text .verse-secondary {
+	direction: rtl;
+	text-align: right;
+}
+
+/* Note icons should also be on the right for RTL */
+.rtl-text .note-icon {
+	margin-left: 0.25em;
+	margin-right: 0;
 }
 
 .accent{accent-color:var(--color-accent)}

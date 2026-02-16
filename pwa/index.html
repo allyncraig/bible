@@ -11,7 +11,10 @@
 		<meta charset="utf-8">
 		<meta name="msapplication-tap-highlight" content="no">
 		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:; connect-src 'self' https://formsubmit.co https://docs.google.com https://api.scripture.api.bible https://bolls.life https://bible.helloao.org https://labs.bible.org https://craigappfoundry.github.io;">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:; connect-src 'self' https://formsubmit.co https://bible-api.bible-api.workers.dev https://docs.google.com https://api.scripture.api.bible https://bolls.life https://bible.helloao.org https://labs.bible.org https://craigappfoundry.github.io;">
 		<link rel="stylesheet" type="text/css" href="css/ConfigManager.css">
 		<link rel="stylesheet" type="text/css" href="css/ModalManager.css">
 		<link rel="stylesheet" type="text/css" href="css/index.css">
@@ -78,8 +81,8 @@
 
 	<!-- Menu Modal -->
 	<div id="menuModal" class="modal-overlay menu-modal">
-		<div class="menu-content">
-			<button onclick="showVotD()" class="menu-item">Verse of the Day</button>
+		<div class="menu-content stable">
+			<!-- <button onclick="showVotD()" class="menu-item">Verse of the Day</button> -->
 			<!-- <button onclick="showVotD(true)" class="menu-item">Reload VotD</button> -->
 			<button onclick="showReadingPlan()" class="menu-item">Reading Plan</button>
 			<button onclick="showBookmark()" class="menu-item">Edit Bookmark</button>
@@ -98,8 +101,8 @@
 
 	<!-- Verse Menu Modal -->
 	<div id="verseMenuModal" class="modal-overlay menu-modal">
-		<div class="menu-content">
-			<button onclick="gotoBookmark();closeModal(MODAL.VERSEMENU)" class="menu-item">Go To Bookmark</button>
+		<div class="menu-content movable">
+			<button onclick="gotoBookmark();closeModal(MODAL.VERSEMENU)" class="menu-item" id="menuGotoBookmark">Go To Bookmark</button>
 			<button onclick="bookmarkSet()" class="menu-item">Bookmark This Verse</button>
 			<button onclick="showNoteEditor()" class="menu-item">Add/Edit Note</button>
 			<button onclick="showSuggestEdit()" class="menu-item" id="menuSuggestEdit">Suggest Edit</button>
@@ -346,24 +349,6 @@
 		</div>
 	</template>
 
-	<!-- Day Complete Modal -->
-	<div id="dayCompleteModal" class="modal-overlay">
-		<div class="modal-wrapper">
-			<div class="modal-header">
-				<h3 class="modal-title">Day Complete!</h3>
-			</div>
-			<div class="modal-content middle">
-				<p class="daycomplete-message">
-					Great job finishing Day <span id="completedDayNumber"></span>'s readings!
-				</p>
-			</div>
-			<div class="modal-content daycomplete-button-row">
-				<button onclick="dayCompleteReturnToBible()" class="daycomplete-button icon ion-ios-book">Return to Bible</button>
-				<button onclick="dayCompleteOK()" class="daycomplete-button icon ion-checkmark-circled">OK</button>
-			</div>
-		</div>
-	</div>
-
 	<!-- Contact Modal -->
 	<div id="contactModal" class="modal-overlay">
 		<div class="modal-wrapper">
@@ -375,7 +360,7 @@
 				<p class="standard-label">
 					Thank you for taking the time to contact us. Please fill out the form below.
 				</p>
-				
+
 				<!-- Contact Type Radio Group -->
 				<div class="config-item">
 					<label class="config-label">Contact Type:</label>
@@ -448,7 +433,7 @@
 	<script type="text/javascript" src="mobileui/mobileui.js"></script>
 	<script type="text/javascript" src="js/HTTPClient.js"></script>
 	<script type="text/javascript" src="js/Template.js"></script>
-	<script type="text/javascript" src="js/book_abbreviations.js"></script>
+	<script type="text/javascript" src="js/book_data.js"></script>
 	<!-- App Classes -->
 	<script type="text/javascript" src="js/class/ConfigManager.js"></script>
 	<script type="text/javascript" src="js/class/StorageManager.js"></script>
@@ -463,6 +448,7 @@
 	<script type="text/javascript" src="js/class/DailyReadingManager.js"></script>
 	<!-- API Provider Plugins -->
 	<script type="text/javascript" src="js/providers/BaseProvider.js"></script>
+	<script type="text/javascript" src="js/providers/AbtApiProvider.js"></script>
 	<script type="text/javascript" src="js/providers/APIBibleProvider.js"></script>
 	<script type="text/javascript" src="js/providers/BollsLifeProvider.js"></script>
 	<script type="text/javascript" src="js/providers/HelloAOProvider.js"></script>

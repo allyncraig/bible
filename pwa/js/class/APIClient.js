@@ -22,9 +22,9 @@ class APIClient {
 		return content;
 	}
 
-	async fetchSearch(version, searchTerm) {
+	async fetchSearch(version, searchTerm, page = 1) {
 		const provider = this.getProviderForVersion(version);
-		const results = await provider.search(version.parameters, searchTerm);
+		const results = await provider.search(version.parameters, searchTerm, page);
 		return results;
 	}
 }

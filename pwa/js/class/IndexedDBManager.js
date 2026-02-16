@@ -55,7 +55,7 @@ class IndexedDBManager {
 			const versions = storeNames
 				.filter(name => name.endsWith('_books'))
 				.map(name => name.replace('_books', ''));
-			
+
 			// console.log('Available IndexedDB versions:', versions.join(' '));
 			return versions;
 		} catch (error) {
@@ -186,7 +186,7 @@ class IndexedDBManager {
 		}
 
 		const storeName = `${versionCode}_books`;
-		
+
 		if (!this.db.objectStoreNames.contains(storeName)) {
 			throw new Error(`Store ${storeName} does not exist`);
 		}
@@ -226,11 +226,11 @@ class IndexedDBManager {
 		try {
 			const tx = this.db.transaction(tableVerses, 'readonly');
 			const store = tx.objectStore(tableVerses);
-			
+
 			// Get all verses and filter in memory
 			// (More efficient than cursor for small datasets)
 			const allVerses = await this._promisifyRequest(store.getAll());
-			
+
 			const verses = allVerses.filter(v => 
 				v.book_id === bookId && v.chapter === chapterNum
 			);
@@ -267,9 +267,9 @@ class IndexedDBManager {
 		try {
 			const tx = this.db.transaction(tableVerses, 'readonly');
 			const store = tx.objectStore(tableVerses);
-			
+
 			const allVerses = await this._promisifyRequest(store.getAll());
-			
+
 			const verse = allVerses.find(v => 
 				v.book_id === bookId && 
 				v.chapter === chapterNum && 
@@ -302,7 +302,7 @@ class IndexedDBManager {
 			const booksTx = this.db.transaction(tableBooks, 'readonly');
 			const booksStore = booksTx.objectStore(tableBooks);
 			const books = await this._promisifyRequest(booksStore.getAll());
-			
+
 			// Create book lookup map
 			const bookMap = {};
 			books.forEach(book => {
@@ -342,7 +342,7 @@ class IndexedDBManager {
 	async createTablesForVersion(versionCode) {
 		// IndexedDB doesn't allow creating stores on an open database
 		// We need to close, increment version, and reopen
-		
+
 		const booksStore = `${versionCode}_books`;
 		const versesStore = `${versionCode}_verses`;
 
@@ -370,11 +370,11 @@ class IndexedDBManager {
 
 			request.onsuccess = () => {
 				this.db = request.result;
-				
+
 				// Update cache
 				this.storeCache.add(booksStore);
 				this.storeCache.add(versesStore);
-				
+
 				// console.log(`${versionCode}_books and ${versionCode}_verses stores created`);
 				resolve();
 			};
@@ -509,11 +509,11 @@ class IndexedDBManager {
 
 				request.onsuccess = () => {
 					this.db = request.result;
-					
+
 					// Update cache
 					this.storeCache.delete(booksStore);
 					this.storeCache.delete(versesStore);
-					
+
 					resolve();
 				};
 
@@ -533,6 +533,88 @@ class IndexedDBManager {
 			// console.log(`Deleted stores for ${abbreviation}`);
 		} catch (error) {
 			console.error(`Error deleting version ${abbreviation}:`, error);
+			throw error;
+		}
+	}
+
+	async search(searchTerm, tableVerses, tableBooks, limit = 100, offset = 0) {
+		if (!this.db) {
+			throw new Error('Database not initialized');
+		}
+
+		if (!this.db.objectStoreNames.contains(tableVerses) || 
+			!this.db.objectStoreNames.contains(tableBooks)) {
+			throw new Error('Required stores do not exist');
+		}
+
+		try {
+			// Load books first for abbreviation lookup
+			const booksTx = this.db.transaction(tableBooks, 'readonly');
+			const booksStore = booksTx.objectStore(tableBooks);
+			const books = await this._promisifyRequest(booksStore.getAll());
+
+			// Create book lookup map
+			const bookMap = {};
+			books.forEach(book => {
+				bookMap[book.id] = book;
+			});
+
+			// Load and search verses
+			const versesTx = this.db.transaction(tableVerses, 'readonly');
+			const versesStore = versesTx.objectStore(tableVerses);
+			const allVerses = await this._promisifyRequest(versesStore.getAll());
+
+			// Case-insensitive search
+			const searchLower = searchTerm.toLowerCase();
+			const matchingVerses = allVerses
+				.filter(verse => verse.text.toLowerCase().includes(searchLower));
+
+			// Apply offset and limit
+			const results = matchingVerses
+				.slice(offset, offset + limit)
+				.map(verse => ({
+					abbreviation: bookMap[verse.book_id]?.abbreviation || '',
+					chapter: verse.chapter,
+					verse: verse.verse,
+					text: verse.text
+				}));
+
+			// Return in SQL-like ResultSet format
+			return {
+				rows: {
+					length: results.length,
+					item: (i) => results[i]
+				}
+			};
+		} catch (error) {
+			console.error('Error searching:', error);
+			throw error;
+		}
+	}
+
+	async searchCount(searchTerm, tableVerses) {
+		if (!this.db) {
+			throw new Error('Database not initialized');
+		}
+
+		if (!this.db.objectStoreNames.contains(tableVerses)) {
+			throw new Error(`Store ${tableVerses} does not exist`);
+		}
+
+		try {
+			const tx = this.db.transaction(tableVerses, 'readonly');
+			const store = tx.objectStore(tableVerses);
+			const allVerses = await this._promisifyRequest(store.getAll());
+
+			// Case-insensitive search and count
+			const searchLower = searchTerm.toLowerCase();
+			const count = allVerses.filter(verse => 
+				verse.text.toLowerCase().includes(searchLower)
+			).length;
+
+			return count;
+		} catch (error) {
+			console.error('Error counting search results:', error);
 			throw error;
 		}
 	}
